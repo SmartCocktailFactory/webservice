@@ -15,7 +15,7 @@ order_id = 0
 
 @app.route('/')
 def welcome():
-    return 'Welcome to the Smart Cocktail Factory'
+    return json.dumps('Welcome to the Smart Cocktail Factory')
 
 @app.route('/drinks')
 def get_drinks():
