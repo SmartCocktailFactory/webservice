@@ -8,10 +8,9 @@ from utils import jsonify
 app = Flask(__name__)
 
 drinks = { \
-  #                              [Vodka ml]   [Cola ml]    [Rum ml]    [Ice cubes]
-    'Drink1' : Drink('Drink 1', [  0,           140,          10,            1 ]),
-    'Drink2' : Drink('Drink 2', [  10,          140,           0,            0 ]),
-    'Drink3' : Drink('Drink 3', [  30,          120,           0,            1 ]),
+    'Drink1' : Drink('Drink 1', Vodka= 0, Cola=140, Rum=10, IceCube=1),
+    'Drink2' : Drink('Drink 2', Vodka=10, Cola=140, Rum= 0, IceCube=0),
+    'Drink3' : Drink('Drink 3', Vodka=30, Cola=120, Rum= 0, IceCube=1),
 }
 
 orders = dict()
@@ -36,7 +35,8 @@ def order_drink(drink_id):
 
 @app.route('/admin/orders')
 def get_orders():
-    return jsonify([(o.order_id, o.drink_id, o.recipe, o.status) for o in orders.values()])
+    serialized_orders = [o.serializeToJson() for o in orders.values()]
+    return jsonify(serialized_orders)
 
 @app.route('/admin/orders/clear', methods=['PUT'])
 def clear_orders():
@@ -47,8 +47,7 @@ def clear_orders():
 
 @app.route('/factory/orders/pending')
 def get_pending_orders():
-    pending_orders = [o for o in orders.values() if o.status == 'pending']
-    serialized_orders = [o.serializeToJson() for o in pending_orders]
+    serialized_orders = [o.serializeToJson() for o in orders.values() if o.status == 'pending']
     return jsonify(serialized_orders)
 
 @app.route('/factory/orders/next', methods=['PUT'])
@@ -57,9 +56,9 @@ def get_next_order():
     if len(pending_order_ids) == 0:
         return jsonify(dict())
     allocated_order_id = min(pending_order_ids)
-    allocated_order = orders[allocated_order_id]
-    allocated_order.status = 'in progress'
-    return allocated_order.serializeToJson()
+    orders[allocated_order_id].status = 'in progress'
+    response = { 'order_id' : allocated_order_id, 'recipe' : orders[allocated_order_id].recipe }
+    return jsonify(response)
 
 if __name__ == '__main__':
     parser = OptionParser()

@@ -16,13 +16,14 @@ class WebserviceFactoryTestCase(unittest.TestCase):
 
     def test_nextOrderWhenOneOrderIsPending(self):
         # given
-        self.app.order_drink('Drink1')
+        self.app.order_drink()
         # when
         response = self.app.read_next_order()
         # then
         self.assertEqual(dict, type(response))
         self.assertEqual(1, response['order_id'])
         self.assertEqual(dict, type(response['recipe']))
+        self.assertEqual(4, len(response['recipe'].keys())) # 4 ingredients
 
     def test_nextOrderWhenNoOrderIsPendingButOneInProgress(self):
         # given

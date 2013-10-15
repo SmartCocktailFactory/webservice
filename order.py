@@ -12,12 +12,8 @@ class Order(object):
         valueObject = \
         {
               'order_id' : self.order_id,
-              'recipe' :
-                    {
-                     'Vodka' : self.recipe[0],
-                     'Rum' : self.recipe[1],
-                     'Cola' : self.recipe[2],
-                     'IceCube' : self.recipe[3],
-                    }
+              'drink_id' : self.drink_id,
+              'recipe' : self.recipe,
+              'status' : self.status
         }
         return jsonify(valueObject)
