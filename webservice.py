@@ -1,5 +1,6 @@
 # coding: utf8
 from flask import Flask, json, request, Response, abort, redirect
+from optparse import OptionParser
 from drink import Drink
 from order import Order
 from utils import jsonify
@@ -61,4 +62,7 @@ def get_next_order():
     return allocated_order.serializeToJson()
 
 if __name__ == '__main__':
-    app.run(host='localhost', port=12345, debug=True)
+    parser = OptionParser()
+    parser.add_option("-b", "--bind-address", default='localhost', dest="bind_address", help="bind to ip-address/host BIND_ADDRESS")
+    (options, args) = parser.parse_args()
+    app.run(host=options.bind_address, port=12345, debug=True)
