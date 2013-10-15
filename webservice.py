@@ -34,11 +34,11 @@ def order_drink(drink_id):
     orders[order_id] = Order(order_id, drink_id, drinks[drink_id].recipe, 'pending')
     return jsonify(order_id)
 
-@app.route('/orders')
+@app.route('/admin/orders')
 def get_orders():
     return jsonify([(o.order_id, o.drink_id, o.recipe, o.status) for o in orders.values()])
 
-@app.route('/factory/orders/clear', methods=['PUT'])
+@app.route('/admin/orders/clear', methods=['PUT'])
 def clear_orders():
     global orders, order_id
     orders = dict()

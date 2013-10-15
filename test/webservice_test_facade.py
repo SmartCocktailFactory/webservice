@@ -17,10 +17,10 @@ class WebserviceTestFacade(object):
         return self.__put('/orders/' + drink_id)
 
     def get_order_list(self):
-        return self.__get('/orders')
+        return self.__get('/admin/orders')
 
     def clear_orders(self):
-        return self.__put('/factory/orders/clear')
+        return self.__put('/admin/orders/clear')
 
     def read_next_order(self):
         return self.__put('/factory/orders/next')
