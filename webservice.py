@@ -13,7 +13,7 @@ drinks = { \
     'Drink3' : Drink('Drink 3', [  30,          120,           0,            1 ]),
 }
 
-orders = {}
+orders = dict()
 order_id = 0
 
 @app.route('/')
@@ -37,9 +37,22 @@ def order_drink(drink_id):
 def get_orders():
     return jsonify([(o.order_id, o.drink_id, o.recipe, o.status) for o in orders.values()])
 
+@app.route('/factory/orders/clear', methods=['PUT'])
+def clear_orders():
+    global orders
+    orders = dict()
+    return jsonify('OK')
+
+@app.route('/factory/orders/pending')
+def get_pending_orders():
+    pending_orders = [o for o in orders.values() if o.status == 'pending']
+    serialized_orders = [o.serializeToJson() for o in pending_orders]
+    return jsonify(serialized_orders)
+
 @app.route('/factory/orders/next', methods=['PUT'])
 def get_next_order():
-    if len(orders) == 0:
+    pending_orders = [o for o in orders.values() if o.status == 'pending']
+    if len(pending_orders) == 0:
         return jsonify(dict())
     allocated_order_id = min(orders)
     allocated_order = orders[allocated_order_id]

@@ -6,18 +6,19 @@ class WebservicePublicTestCase(unittest.TestCase):
 
     def setUp(self):
         webservice.app.config['TESTING'] = True
-        self.app = webservice.app.test_client()
+        self.__test_client = webservice.app.test_client()
+        self.put('/factory/orders/clear')
 
     def tearDown(self):
         pass #empty
 
     def get(self, uri):
-        response = self.app.get(uri)
+        response = self.__test_client.get(uri)
         jsonResponse = json.loads(response.data)
         return jsonResponse
 
     def put(self, uri):
-        response = self.app.put(uri)
+        response = self.__test_client.put(uri)
         jsonResponse = json.loads(response.data)
         return jsonResponse
 
