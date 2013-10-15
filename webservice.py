@@ -39,8 +39,9 @@ def get_orders():
 
 @app.route('/factory/orders/clear', methods=['PUT'])
 def clear_orders():
-    global orders
+    global orders, order_id
     orders = dict()
+    order_id = 0
     return jsonify('OK')
 
 @app.route('/factory/orders/pending')
@@ -51,10 +52,10 @@ def get_pending_orders():
 
 @app.route('/factory/orders/next', methods=['PUT'])
 def get_next_order():
-    pending_orders = [o for o in orders.values() if o.status == 'pending']
-    if len(pending_orders) == 0:
+    pending_order_ids = [o_id for o_id in orders if orders[o_id].status == 'pending']
+    if len(pending_order_ids) == 0:
         return jsonify(dict())
-    allocated_order_id = min(orders)
+    allocated_order_id = min(pending_order_ids)
     allocated_order = orders[allocated_order_id]
     allocated_order.status = 'in progress'
     return allocated_order.serializeToJson()
