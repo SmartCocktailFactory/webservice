@@ -1,7 +1,6 @@
 
 class Drink(object):
 
-    def __init__(self, drink_id, drink_name, recipe):
-        self.drink_id = drink_id
+    def __init__(self, drink_name, recipe):
         self.drink_name = drink_name
         self.recipe = recipe
