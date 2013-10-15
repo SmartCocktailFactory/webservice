@@ -24,6 +24,13 @@ def welcome():
 def get_drinks():
     return jsonify(drinks.keys())
 
+@app.route('/drinks/<drink_id>/recipe')
+def get_drink_recipe(drink_id):
+    global order_id
+    if not drink_id in drinks.keys():
+        abort(404)
+    return jsonify(drinks[drink_id].recipe) #TODO units?
+
 @app.route('/orders/<drink_id>', methods=['PUT'])
 def order_drink(drink_id):
     global order_id
