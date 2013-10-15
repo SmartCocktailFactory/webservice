@@ -28,19 +28,19 @@ class WebservicePublicTestCase(unittest.TestCase):
     def test_getDrinks(self):
         response = self.get('/drinks')
         self.assertEqual(list, type(response))
-        self.assertEqual(4, len(response))
+        self.assertEqual(3, len(response))
 
     def test_orderDrink(self):
-        response = self.put('/orders/Martini')
+        response = self.put('/orders/Drink1')
         self.assertEquals(int, type(response))
-        response_next = self.put('/orders/Martini')
+        response_next = self.put('/orders/Drink1')
         self.assertEquals(response_next, response + 1)
 
     def test_orderDrinkThenCheckOrders(self):
         #given
         ordersResponseOld = self.get('/orders')
         # when
-        self.put('/orders/Martini')
+        self.put('/orders/Drink1')
         ordersResponseNew = self.get('/orders')
         #then
         self.assertEquals(len(ordersResponseOld) + 1, len(ordersResponseNew))
