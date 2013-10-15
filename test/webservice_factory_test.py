@@ -34,13 +34,13 @@ class WebserviceFactoryTestCase(unittest.TestCase):
         self.assertEqual(dict, type(response))
         self.assertEqual(dict(), response)
 
-    def test_pendingOrdersWhenNoOrdersArePending(self):
+    def test_getPendingOrdersWhenNoOrdersArePending(self):
         # when
         response = self.app.get_pending_orders()
         # then
         self.assertEqual(0, len(response))
 
-    def test_pendingOrdersWhenOneOrderIsPending(self):
+    def test_getPendingOrdersWhenOneOrderIsPending(self):
         # given
         self.app.order_drink()
         # when
@@ -49,7 +49,7 @@ class WebserviceFactoryTestCase(unittest.TestCase):
         self.assertEqual(list, type(response))
         self.assertEqual(1, len(response))
 
-    def test_pendingOrdersWhenNoOrderIsPendingButOneInProgress(self):
+    def test_getPendingOrdersWhenNoOrderIsPendingButOneInProgress(self):
         # given
         self.app.order_drink()
         self.app.read_next_order()

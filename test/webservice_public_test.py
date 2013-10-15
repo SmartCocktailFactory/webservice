@@ -25,29 +25,24 @@ class WebservicePublicTestCase(unittest.TestCase):
         response = self.app.order_drink()
         # then
         self.assertEquals(int, type(response))
+        self.assertEquals(1, response)
 
-    def test_orderAnotherDrink(self):
+    def test_orderDrinkJustAnotherDrink(self):
         # given
+        self.app.order_drink()
+        # when
         response = self.app.order_drink()
-        # when
-        response_next = self.app.order_drink()
         # then
-        self.assertEquals(response_next, response + 1)
+        self.assertEquals(2, response)
 
-    def test_getOrdersWithNoPendingOrder(self):
-        # when
-        response = self.app.get_order_list()
-        # then
-        self.assertEquals(0, len(response))
-
-    def test_getOrdersWithPendingOrders(self):
-        # given
-        self.app.order_drink()
-        self.app.order_drink()
+    def test_orderDrinkAllAvailableDrinks(self):
+        #given
+        drinks = self.app.get_drink_list()
         #when
-        response = self.app.get_order_list()
-        # then
-        self.assertEquals(2, len(response))
+        response = 0
+        for drink_id in drinks:
+            response = self.app.order_drink(drink_id)
+        self.assertEquals(len(drinks), response)
 
 
 if __name__ == '__main__':
