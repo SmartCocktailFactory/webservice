@@ -43,10 +43,10 @@ def order_drink(drink_id):
 
 @app.route('/admin/orders')
 def get_orders():
-    if 'status' in request.args.keys():
+    if 'status' in request.args:
         selected_orders = [o for o in orders.values() if o.status == request.args['status']]
     else:
-        selected_orders = orders.values
+        selected_orders = orders.values()
     serialized_orders = [o.ToJsonConvertableObject() for o in selected_orders]
     return jsonify(serialized_orders)
 
@@ -82,6 +82,7 @@ def update_order_status(order_id):
         abort(404)
     if not 'status' in request.args.keys():
         abort(400)
+        redirect(303)
     orders[order_id].status = request.args['status']
     return jsonify('OK')
 

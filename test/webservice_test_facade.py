@@ -26,7 +26,7 @@ class WebserviceTestFacade(object):
         return self.__post('/factory/orders/next')
 
     def get_pending_orders(self):
-        return self.__get('/factory/orders/pending')
+        return self.__get('/admin/orders?status=pending')
 
     def __get(self, uri):
         response = self.__test_client.get(uri)
@@ -47,7 +47,7 @@ class WebserviceTestFacade(object):
         return jsonResponse
 
     def __ensure_response_is_ok(self, response):
-        if response.status_code >= 200 and response.status_code < 300:
+        if response.status_code < 200 or response.status_code >= 300:
             raise WebApplicationError(response.status, response.status_code)
 
 class WebApplicationError(Exception):
