@@ -1,0 +1,4 @@
+Flask==0.10.1
+Werkzeug==0.9.1
+jinja2==2.6
+gunicorn==0.17.2
