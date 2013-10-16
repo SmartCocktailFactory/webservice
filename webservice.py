@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # coding: utf8
 from flask import Flask, json, request, Response, abort, redirect
 from optparse import OptionParser
