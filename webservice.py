@@ -43,10 +43,14 @@ def order_drink(drink_id):
 
 @app.route('/admin/orders')
 def get_orders():
-    serialized_orders = [o.ToJsonConvertableObject() for o in orders.values()]
+    if 'status' in request.args.keys():
+        selected_orders = [o for o in orders.values() if o.status == request.args['status']]
+    else:
+        selected_orders = orders.values
+    serialized_orders = [o.ToJsonConvertableObject() for o in selected_orders]
     return jsonify(serialized_orders)
 
-@app.route('/admin/orders/clear', methods=['PUT'])
+@app.route('/admin/orders/clear', methods=['PUT', 'GET'])
 def clear_orders():
     global orders, order_id
     orders = dict()
@@ -62,11 +66,6 @@ def __get_pending_order_ids():
 def __get_in_progress_order_ids():
     return __get_order_ids_with_status('in progress')
 
-@app.route('/factory/orders/pending')
-def get_pending_orders():
-    serialized_orders = [orders[oId].ToJsonConvertableObject() for oId in __get_pending_order_ids()]
-    return jsonify(serialized_orders)
-
 @app.route('/factory/orders/next', methods=['POST'])
 def get_next_order():
     pending_order_ids = __get_pending_order_ids()
@@ -77,11 +76,13 @@ def get_next_order():
     response = { 'order_id' : allocated_order_id, 'recipe' : orders[allocated_order_id].recipe }
     return jsonify(response)
 
-@app.route('/factory/orders/<int:order_id>/done', methods=['PUT'])
-def on_order_completed(order_id):
+@app.route('/factory/orders/<int:order_id>', methods=['PUT'])
+def update_order_status(order_id):
     if not order_id in orders:
         abort(404)
-    orders[order_id].status = 'completed'
+    if not 'status' in request.args.keys():
+        abort(400)
+    orders[order_id].status = request.args['status']
     return jsonify('OK')
 
 def __get_expected_time_to_completion(order_id):
