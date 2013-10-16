@@ -58,6 +58,8 @@ class WebserviceTestFacade(object):
     def __ensure_response_is_ok(self, response):
         if response.status_code < 200 or response.status_code >= 300:
             raise WebApplicationError(response.status, response.status_code)
+        if type(response.data)==list:
+            raise 'response object must be json object, not a list'
 
 class WebApplicationError(Exception):
     def __init__(self, status, status_code):

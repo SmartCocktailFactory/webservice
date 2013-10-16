@@ -29,7 +29,7 @@ def welcome():
 
 @app.route('/drinks')
 def get_drinks():
-    response = [d.to_gui_summary() for d in drinks.values()]
+    response = { 'drinks' : [d.to_gui_summary() for d in drinks.values()]}
     return jsonify(response)
 
 @app.route('/drinks/<drink_id>')
@@ -50,7 +50,7 @@ def get_orders():
         selected_orders = orders.get_all_with_status(request.args['status'])
     else:
         selected_orders = orders.get_all()
-    response = [o.to_admin_details() for o in selected_orders]
+    response = { 'orders' : [o.to_admin_details() for o in selected_orders] }
     return jsonify(response)
 
 @app.route('/admin/orders/clear', methods=['PUT', 'GET'])

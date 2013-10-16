@@ -40,7 +40,9 @@ class WebserviceFactoryTestCase(unittest.TestCase):
         # when
         response = self.app.get_pending_orders()
         # then
-        self.assertEqual(0, len(response))
+        self.assertEqual(dict, type(response))
+        self.assertEqual(list, type(response['orders']))
+        self.assertEqual(0, len(response['orders']))
 
     def test_getPendingOrdersWhenOneOrderIsPending(self):
         # given
@@ -48,8 +50,9 @@ class WebserviceFactoryTestCase(unittest.TestCase):
         # when
         response = self.app.get_pending_orders()
         # then
-        self.assertEqual(list, type(response))
-        self.assertEqual(1, len(response))
+        self.assertEqual(dict, type(response))
+        self.assertEqual(list, type(response['orders']))
+        self.assertEqual(1, len(response['orders']))
 
     def test_getPendingOrdersWhenNoOrderIsPendingButOneInProgress(self):
         # given
@@ -58,8 +61,9 @@ class WebserviceFactoryTestCase(unittest.TestCase):
         # when
         response = self.app.get_pending_orders()
         # then
-        self.assertEqual(list, type(response))
-        self.assertEqual(list(), response)
+        self.assertEqual(dict, type(response))
+        self.assertEqual(list, type(response['orders']))
+        self.assertEqual(0, len(response['orders']))
 
 
 if __name__ == '__main__':

@@ -11,13 +11,15 @@ class WebserviceAdminTestCase(unittest.TestCase):
         # when
         response = self.app.get_order_list()
         # then
-        self.assertEquals(0, len(response))
+        self.assertTrue(dict, type(response))
+        self.assertEquals(0, len(response['orders']))
 
     def test_getOrdersWithPendingOrders(self):
         # given
         self.app.order_drink()
         self.app.order_drink()
-        #when
+        # when
         response = self.app.get_order_list()
         # then
-        self.assertEquals(2, len(response))
+        self.assertTrue(dict, type(response))
+        self.assertEquals(2, len(response['orders']))

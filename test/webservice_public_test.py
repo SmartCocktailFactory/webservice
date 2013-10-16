@@ -17,9 +17,9 @@ class WebservicePublicTestCase(unittest.TestCase):
         # when
         response = self.app.get_drink_list()
         # then
-        self.assertEqual(list, type(response))
-        self.assertEqual(3, len(response))
-        for d in response:
+        self.assertEqual(dict, type(response))
+        self.assertEqual(3, len(response['drinks']))
+        for d in response['drinks']:
             self.assertTrue(dict, type(d))
             self.assertTrue('id' in d.keys())
             self.assertTrue('name' in d.keys())
@@ -59,13 +59,15 @@ class WebservicePublicTestCase(unittest.TestCase):
         self.assertEquals(2, response)
 
     def test_orderDrinkAllAvailableDrinks(self):
-        #given
+        # given
         drinks = self.app.get_drink_list()
-        #when
+        drink_list = drinks['drinks']
         response = 0
-        for drink_summary in drinks:
+        # when
+        for drink_summary in drink_list:
             response = self.app.order_drink(drink_summary['id'])
-        self.assertEquals(len(drinks), response)
+        # then
+        self.assertEquals(len(drink_list), response)
 
     def test_orderDrinkThatDoesNotExist(self):
         try:
