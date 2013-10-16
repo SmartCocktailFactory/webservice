@@ -14,7 +14,7 @@ class WebserviceTestFacade(object):
         return self.__get('/drinks')
 
     def order_drink(self, drink_id='Drink1'):
-        return self.__put('/orders/' + drink_id)
+        return self.__post('/orders/' + drink_id)
 
     def get_order_list(self):
         return self.__get('/admin/orders')
@@ -23,13 +23,18 @@ class WebserviceTestFacade(object):
         return self.__put('/admin/orders/clear')
 
     def read_next_order(self):
-        return self.__put('/factory/orders/next')
+        return self.__post('/factory/orders/next')
 
     def get_pending_orders(self):
         return self.__get('/factory/orders/pending')
 
     def __get(self, uri):
         response = self.__test_client.get(uri)
+        jsonResponse = json.loads(response.data)
+        return jsonResponse
+
+    def __post(self, uri):
+        response = self.__test_client.post(uri)
         jsonResponse = json.loads(response.data)
         return jsonResponse
 

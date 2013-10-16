@@ -31,7 +31,7 @@ def get_drink_recipe(drink_id):
         abort(404)
     return jsonify(drinks[drink_id].recipe) #TODO units?
 
-@app.route('/orders/<drink_id>', methods=['PUT'])
+@app.route('/orders/<drink_id>', methods=['POST'])
 def order_drink(drink_id):
     global order_id
     if not drink_id in drinks.keys():
@@ -66,7 +66,7 @@ def get_pending_orders():
     serialized_orders = [orders[oId].ToJsonConvertableObject() for oId in __get_pending_order_ids()]
     return jsonify(serialized_orders)
 
-@app.route('/factory/orders/next', methods=['PUT'])
+@app.route('/factory/orders/next', methods=['POST'])
 def get_next_order():
     pending_order_ids = __get_pending_order_ids()
     if len(pending_order_ids) == 0:
