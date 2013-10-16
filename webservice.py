@@ -10,9 +10,9 @@ from utils import jsonify
 app = Flask(__name__)
 
 drinks = { \
-    'Drink1' : Drink('Drink 1', Vodka= 0, Cola=140, Rum=10, IceCube=1),
-    'Drink2' : Drink('Drink 2', Vodka=10, Cola=140, Rum= 0, IceCube=0),
-    'Drink3' : Drink('Drink 3', Vodka=30, Cola=120, Rum= 0, IceCube=1),
+    'Drink1' : Drink('Drink 1',           Cola=140, Rum=10, IceCube=1),
+    'Drink2' : Drink('Drink 2', Vodka=10, Cola=140),
+    'Drink3' : Drink('Drink 3', Vodka=30, Cola=120,         IceCube=1),
 }
 
 orders = dict()

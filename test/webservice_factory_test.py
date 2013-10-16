@@ -23,7 +23,8 @@ class WebserviceFactoryTestCase(unittest.TestCase):
         self.assertEqual(dict, type(response))
         self.assertEqual(1, response['order_id'])
         self.assertEqual(dict, type(response['recipe']))
-        self.assertEqual(4, len(response['recipe'].keys())) # 4 ingredients
+        self.assertTrue(len(response['recipe'].keys()) > 0) # more than 0 ingredients
+        self.assertTrue(len(response['recipe'].keys()) < 4) # less than 4 ingredients
 
     def test_nextOrderWhenNoOrderIsPendingButOneInProgress(self):
         # given
