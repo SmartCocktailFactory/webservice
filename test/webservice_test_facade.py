@@ -13,6 +13,9 @@ class WebserviceTestFacade(object):
     def get_drink_list(self):
         return self.__get('/drinks')
 
+    def get_drink_details(self, drink_id='Drink1'):
+        return self.__get('/drinks/' + drink_id)
+
     def order_drink(self, drink_id='Drink1'):
         return self.__post('/orders/' + drink_id)
 

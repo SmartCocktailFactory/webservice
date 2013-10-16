@@ -19,6 +19,29 @@ class WebservicePublicTestCase(unittest.TestCase):
         # then
         self.assertEqual(list, type(response))
         self.assertEqual(3, len(response))
+        for d in response:
+            self.assertTrue(dict, type(d))
+            self.assertTrue('id' in d.keys())
+            self.assertTrue('name' in d.keys())
+
+    def test_getDrinkDetails(self):
+        # when
+        response = self.app.get_drink_details()
+        # then
+        self.assertEquals(dict, type(response))
+        self.assertTrue('id' in response.keys())
+        self.assertTrue('name' in response.keys())
+        self.assertTrue('description' in response.keys())
+        self.assertTrue('recipe' in response.keys())
+
+    def test_getDrinkDetailsForInexistantDrink(self):
+        try:
+            self.app.get_drink_details('ADrinkThatDoesNotExist')
+        except WebApplicationError as error:
+            if error.status_code != 404:
+                self.fail("Drink does not exist. application should report 404")
+        else:
+            self.fail("Drink does not exist. application should report error.")
 
     def test_orderDrink(self):
         # when
@@ -40,8 +63,8 @@ class WebservicePublicTestCase(unittest.TestCase):
         drinks = self.app.get_drink_list()
         #when
         response = 0
-        for drink_id in drinks:
-            response = self.app.order_drink(drink_id)
+        for drink_summary in drinks:
+            response = self.app.order_drink(drink_summary['id'])
         self.assertEquals(len(drinks), response)
 
     def test_orderDrinkThatDoesNotExist(self):
