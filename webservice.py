@@ -2,11 +2,9 @@
 # coding: utf8
 from flask import Flask, json, request, Response, abort, redirect
 from optparse import OptionParser
-from datetime import timedelta
 from drink import Drink
-from order import Order
 from order_queue import OrderQueue
-from utils import jsonify
+from utils import jsonify, ensure_drink_exists, ensure_order_exists, get_expected_time_to_completion
 
 app = Flask(__name__)
 
@@ -36,13 +34,13 @@ def get_drinks():
 
 @app.route('/drinks/<drink_id>')
 def get_drink_details(drink_id):
-    ensure_drink_exists(drink_id)
+    ensure_drink_exists(drinks, drink_id)
     response = drinks[drink_id].to_gui_details()
     return jsonify(response)
 
 @app.route('/orders/<drink_id>', methods=['POST'])
 def order_drink(drink_id):
-    ensure_drink_exists(drink_id)
+    ensure_drink_exists(drinks, drink_id)
     order_id = orders.add(drink_id, drinks[drink_id].recipe)
     return jsonify(order_id)
 
@@ -70,7 +68,7 @@ def get_next_order():
 
 @app.route('/factory/orders/<int:order_id>', methods=['PUT'])
 def update_order_status(order_id):
-    ensure_order_exists(order_id)
+    ensure_order_exists(orders, order_id)
     if not 'status' in request.args.keys():
         abort(400)
     orders.get(order_id).status = request.args['status']
@@ -78,29 +76,10 @@ def update_order_status(order_id):
 
 @app.route('/orders/<int:order_id>')
 def get_order_status(order_id):
-    ensure_order_exists(order_id)
+    ensure_order_exists(orders, order_id)
     response = orders.get(order_id).to_gui_summary()
-    response['expected_time_to_completion'] = get_expected_time_to_completion(order_id).total_seconds()
+    response['expected_time_to_completion'] = get_expected_time_to_completion(orders, order_id).total_seconds()
     return jsonify(response)
-
-def get_expected_time_to_completion(order_id):
-    order_status = orders.get(order_id).status
-    if order_status == 'completed':
-        return timedelta(seconds = 0)
-    elif order_status == 'in progress':
-        return timedelta(seconds = 2)
-    else: # order_status == 'pending'
-        pending_order_ids = [o.order_id for o in orders.get_all_pending()]
-        num_higher_prio_orders = pending_order_ids.index(order_id)
-        return timedelta(seconds = 5) * (1 + num_higher_prio_orders)
-
-def ensure_drink_exists(drink_id):
-    if not drink_id in drinks.keys():
-        abort(404)
-
-def ensure_order_exists(order_id):
-    if not orders.has_order_id(order_id):
-        abort(404)
 
 
 if __name__ == '__main__':
