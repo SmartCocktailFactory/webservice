@@ -1,10 +1,10 @@
 
 class Drink(object):
 
-    def __init__(self, id, drink_name, **recipe):
+    def __init__(self, id, drink_name):
         self.id = id
         self.name = drink_name
-        self.recipe = recipe
+        self.recipe = dict()
         self.description = ''
         self.human_readable_recipe = []
 
