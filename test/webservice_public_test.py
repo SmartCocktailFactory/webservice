@@ -1,5 +1,5 @@
 import unittest
-from webservice_test_facade import WebserviceTestFacade
+from webservice_test_facade import WebserviceTestFacade, WebApplicationError
 
 class WebservicePublicTestCase(unittest.TestCase):
 
@@ -44,6 +44,14 @@ class WebservicePublicTestCase(unittest.TestCase):
             response = self.app.order_drink(drink_id)
         self.assertEquals(len(drinks), response)
 
+    def test_orderDrinkThatDoesNotExist(self):
+        try:
+            self.app.order_drink('ADrinkThatDoesNotExist')
+        except WebApplicationError as error:
+            if error.status_code != 404:
+                self.fail("Drink does not exist. application should report 404")
+        else:
+            self.fail("Drink does not exist. application should report error.")
 
 if __name__ == '__main__':
     unittest.main()

@@ -30,15 +30,27 @@ class WebserviceTestFacade(object):
 
     def __get(self, uri):
         response = self.__test_client.get(uri)
+        self.__ensure_response_is_ok(response)
         jsonResponse = json.loads(response.data)
         return jsonResponse
 
     def __post(self, uri):
         response = self.__test_client.post(uri)
+        self.__ensure_response_is_ok(response)
         jsonResponse = json.loads(response.data)
         return jsonResponse
 
     def __put(self, uri):
         response = self.__test_client.put(uri)
+        self.__ensure_response_is_ok(response)
         jsonResponse = json.loads(response.data)
         return jsonResponse
+
+    def __ensure_response_is_ok(self, response):
+        if response.status_code != 200:
+            raise WebApplicationError(response.status, response.status_code)
+
+class WebApplicationError(Exception):
+    def __init__(self, status, status_code):
+        self.status = status
+        self.status_code = status_code
