@@ -71,7 +71,7 @@ def get_order_status(order_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
     parser = OptionParser()
     parser.add_option("-b", "--bind-address", default='localhost', dest="bind_address", help="bind to ip-address/host BIND_ADDRESS")
     (options, args) = parser.parse_args()
