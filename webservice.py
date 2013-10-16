@@ -5,6 +5,7 @@ from optparse import OptionParser
 from datetime import timedelta
 from drink import Drink
 from order import Order
+from order_queue import OrderQueue
 from utils import jsonify
 
 app = Flask(__name__)
@@ -22,8 +23,7 @@ drinks['Drink3'] = Drink('Drink3', 'Black Russian', Vodka=30, Cola=120,         
 drinks['Drink3'].description = r"""The Black Russian is a cocktail of vodka and coffee liqueur. It contains either three parts vodka and two parts coffee liqueur, per the Kahlúa bottle's label, or five parts vodka to two parts coffee liqueur, per IBA specified ingredients. Traditionally the drink is made by pouring the vodka over ice cubes or cracked ice in an old-fashioned glass, followed by the coffee liqueur."""
 drinks['Drink3'].human_readable_recipe = ["50 mL Vodka", "20 mL Coffee liqueur"]
 
-orders = dict()
-order_id = 0
+orders = OrderQueue()
 
 @app.route('/')
 def welcome():
@@ -42,36 +42,30 @@ def get_drink_details(drink_id):
 
 @app.route('/orders/<drink_id>', methods=['POST'])
 def order_drink(drink_id):
-    global order_id
     ensure_drink_exists(drink_id)
-    order_id += 1
-    orders[order_id] = Order(order_id, drink_id, drinks[drink_id].recipe, 'pending')
+    order_id = orders.add(drink_id, drinks[drink_id].recipe)
     return jsonify(order_id)
 
 @app.route('/admin/orders')
 def get_orders():
     if 'status' in request.args:
-        selected_orders = [o for o in orders.values() if o.status == request.args['status']]
+        selected_orders = orders.get_all_with_status(request.args['status'])
     else:
-        selected_orders = orders.values()
-    response = [o.to_factory_details() for o in selected_orders]
+        selected_orders = orders.get_all()
+    response = [o.to_admin_details() for o in selected_orders]
     return jsonify(response)
 
 @app.route('/admin/orders/clear', methods=['PUT', 'GET'])
 def clear_orders():
-    global orders, order_id
-    orders = dict()
-    order_id = 0
+    orders.clear()
     return jsonify('OK')
 
 @app.route('/factory/orders/next', methods=['POST'])
 def get_next_order():
-    pending_order_ids = get_pending_order_ids()
-    if len(pending_order_ids) == 0:
+    next_pending = orders.pop_next_pending()
+    if next_pending is None:
         return jsonify(dict())
-    allocated_order_id = min(pending_order_ids)
-    orders[allocated_order_id].status = 'in progress'
-    response = { 'order_id' : allocated_order_id, 'recipe' : orders[allocated_order_id].recipe }
+    response = next_pending.to_factory_summary()
     return jsonify(response)
 
 @app.route('/factory/orders/<int:order_id>', methods=['PUT'])
@@ -79,24 +73,24 @@ def update_order_status(order_id):
     ensure_order_exists(order_id)
     if not 'status' in request.args.keys():
         abort(400)
-    orders[order_id].status = request.args['status']
+    orders.get(order_id).status = request.args['status']
     return jsonify('OK')
 
 @app.route('/orders/<int:order_id>')
 def get_order_status(order_id):
     ensure_order_exists(order_id)
-    response = orders[order_id].to_gui_summary()
+    response = orders.get(order_id).to_gui_summary()
     response['expected_time_to_completion'] = get_expected_time_to_completion(order_id).total_seconds()
     return jsonify(response)
 
 def get_expected_time_to_completion(order_id):
-    order_status = orders[order_id].status
+    order_status = orders.get(order_id).status
     if order_status == 'completed':
         return timedelta(seconds = 0)
     elif order_status == 'in progress':
         return timedelta(seconds = 2)
     else: # order_status == 'pending'
-        pending_order_ids = get_pending_order_ids()
+        pending_order_ids = [o.order_id for o in orders.get_all_pending()]
         num_higher_prio_orders = pending_order_ids.index(order_id)
         return timedelta(seconds = 5) * (1 + num_higher_prio_orders)
 
@@ -105,14 +99,8 @@ def ensure_drink_exists(drink_id):
         abort(404)
 
 def ensure_order_exists(order_id):
-    if not order_id in orders.keys():
+    if not orders.has_order_id(order_id):
         abort(404)
-
-def get_order_ids_with_status(status):
-    return [o_id for o_id in orders if orders[o_id].status == status]
-
-def get_pending_order_ids():
-    return get_order_ids_with_status('pending')
 
 
 if __name__ == '__main__':

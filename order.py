@@ -6,13 +6,20 @@ class Order(object):
         self.recipe = recipe
         self.status = status
 
-    def to_factory_details(self):
+    def to_admin_details(self):
         return \
         {
               'order_id' : self.order_id,
               'drink_id' : self.drink_id,
               'recipe' : self.recipe,
               'status' : self.status
+        }
+
+    def to_factory_summary(self):
+        return \
+        {
+              'order_id' : self.order_id,
+              'recipe' : self.recipe
         }
 
     def to_gui_summary(self):
