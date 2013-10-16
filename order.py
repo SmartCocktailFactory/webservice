@@ -14,3 +14,10 @@ class Order(object):
               'recipe' : self.recipe,
               'status' : self.status
         }
+
+    def to_gui_summary(self):
+        return \
+        {
+              'status' : self.status,
+              'expected_time_to_completion' : 0
+        }

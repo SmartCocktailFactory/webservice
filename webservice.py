@@ -36,16 +36,14 @@ def get_drinks():
 
 @app.route('/drinks/<drink_id>')
 def get_drink_details(drink_id):
-    if not drink_id in drinks.keys():
-        abort(404)
+    ensure_drink_exists(drink_id)
     response = drinks[drink_id].to_gui_details()
     return jsonify(response)
 
 @app.route('/orders/<drink_id>', methods=['POST'])
 def order_drink(drink_id):
     global order_id
-    if not drink_id in drinks.keys():
-        abort(404)
+    ensure_drink_exists(drink_id)
     order_id += 1
     orders[order_id] = Order(order_id, drink_id, drinks[drink_id].recipe, 'pending')
     return jsonify(order_id)
@@ -66,18 +64,9 @@ def clear_orders():
     order_id = 0
     return jsonify('OK')
 
-def __get_order_ids_with_status(status):
-    return [o_id for o_id in orders if orders[o_id].status == status]
-
-def __get_pending_order_ids():
-    return __get_order_ids_with_status('pending')
-
-def __get_in_progress_order_ids():
-    return __get_order_ids_with_status('in progress')
-
 @app.route('/factory/orders/next', methods=['POST'])
 def get_next_order():
-    pending_order_ids = __get_pending_order_ids()
+    pending_order_ids = get_pending_order_ids()
     if len(pending_order_ids) == 0:
         return jsonify(dict())
     allocated_order_id = min(pending_order_ids)
@@ -87,36 +76,44 @@ def get_next_order():
 
 @app.route('/factory/orders/<int:order_id>', methods=['PUT'])
 def update_order_status(order_id):
-    if not order_id in orders:
-        abort(404)
+    ensure_order_exists(order_id)
     if not 'status' in request.args.keys():
         abort(400)
-        redirect(303)
     orders[order_id].status = request.args['status']
     return jsonify('OK')
 
-def __get_expected_time_to_completion(order_id):
+@app.route('/orders/<int:order_id>')
+def get_order_status(order_id):
+    ensure_order_exists(order_id)
+    response = orders[order_id].to_gui_summary()
+    response['expected_time_to_completion'] = get_expected_time_to_completion(order_id).total_seconds()
+    return jsonify(response)
+
+def get_expected_time_to_completion(order_id):
     order_status = orders[order_id].status
     if order_status == 'completed':
         return timedelta(seconds = 0)
     elif order_status == 'in progress':
         return timedelta(seconds = 2)
     else: # order_status == 'pending'
-        pending_order_ids = __get_pending_order_ids()
+        pending_order_ids = get_pending_order_ids()
         num_higher_prio_orders = pending_order_ids.index(order_id)
         return timedelta(seconds = 5) * (1 + num_higher_prio_orders)
 
-@app.route('/orders/<int:order_id>/status')
-def get_order_status(order_id):
-    if not order_id in orders:
+def ensure_drink_exists(drink_id):
+    if not drink_id in drinks.keys():
         abort(404)
-    order_status = orders[order_id].status
-    expected_time = __get_expected_time_to_completion(order_id).total_seconds()
-    response = { \
-                'status' : order_status,
-                'expected_time_to_completion' : expected_time
-               }
-    return jsonify(response)
+
+def ensure_order_exists(order_id):
+    if not order_id in orders.keys():
+        abort(404)
+
+def get_order_ids_with_status(status):
+    return [o_id for o_id in orders if orders[o_id].status == status]
+
+def get_pending_order_ids():
+    return get_order_ids_with_status('pending')
+
 
 if __name__ == '__main__':
     parser = OptionParser()

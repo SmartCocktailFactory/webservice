@@ -22,11 +22,17 @@ class WebserviceTestFacade(object):
     def get_order_list(self):
         return self.__get('/admin/orders')
 
+    def get_order_status(self, order_id):
+        return self.__get('/orders/' + str(order_id))
+
     def clear_orders(self):
         return self.__put('/admin/orders/clear')
 
     def read_next_order(self):
         return self.__post('/factory/orders/next')
+
+    def set_order_completed(self, order_id):
+        return self.__put('/factory/orders/' + str(order_id) +'?status=completed')
 
     def get_pending_orders(self):
         return self.__get('/admin/orders?status=pending')

@@ -76,5 +76,38 @@ class WebservicePublicTestCase(unittest.TestCase):
         else:
             self.fail("Drink does not exist. application should report error.")
 
+    def test_getOrderStatusForPending(self):
+        # given
+        self.app.order_drink()
+        # when
+        response = self.app.get_order_status(1)
+        # then
+        self.assertEquals(dict, type(response))
+        self.assertEquals('pending', response['status'])
+        self.assertTrue(response['expected_time_to_completion'] > 0)
+
+    def test_getOrderStatusForInProgress(self):
+        # given
+        self.app.order_drink()
+        self.app.read_next_order()
+        # when
+        response = self.app.get_order_status(1)
+        # then
+        self.assertEquals(dict, type(response))
+        self.assertEquals('in progress', response['status'])
+        self.assertTrue(response['expected_time_to_completion'] > 0)
+
+    def test_getOrderStatusForCompleted(self):
+        # given
+        self.app.order_drink()
+        self.app.read_next_order()
+        self.app.set_order_completed(1)
+        # when
+        response = self.app.get_order_status(1)
+        # then
+        self.assertEquals(dict, type(response))
+        self.assertEquals('completed', response['status'])
+        self.assertTrue(response['expected_time_to_completion'] == 0)
+
 if __name__ == '__main__':
     unittest.main()

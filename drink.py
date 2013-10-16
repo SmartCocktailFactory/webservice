@@ -9,8 +9,18 @@ class Drink(object):
         self.human_readable_recipe = []
 
     def to_gui_summary(self):
-        return { 'id' : self.id, 'name' : self.name }
+        return \
+        {
+                'id' : self.id,
+                'name' : self.name
+        }
 
     def to_gui_details(self):
-        return { 'id' : self.id, 'name' : self.name, 'description' : self.description, 'recipe' : self.human_readable_recipe }
+        return \
+        {
+                'id' : self.id,
+                'name' : self.name,
+                'description' : self.description,
+                'recipe' : self.human_readable_recipe
+        }
 
