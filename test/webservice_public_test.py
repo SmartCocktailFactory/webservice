@@ -18,7 +18,7 @@ class WebservicePublicTestCase(unittest.TestCase):
         response = self.app.get_drink_list()
         # then
         self.assertEqual(dict, type(response))
-        self.assertEqual(3, len(response['drinks']))
+        self.assertEqual(8, len(response['drinks']))
         for d in response['drinks']:
             self.assertTrue(dict, type(d))
             self.assertTrue('id' in d.keys())
