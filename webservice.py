@@ -29,7 +29,7 @@ def get_drink_details(drink_id):
 @app.route('/orders/<drink_id>', methods=['POST'])
 def order_drink(drink_id):
     ensure_drink_exists(drinks, drink_id)
-    order_id = orders.add(drink_id, drinks[drink_id].recipe)
+    order_id = orders.add(drink_id, drinks[drink_id].name, drinks[drink_id].recipe)
     return jsonify(order_id)
 
 @app.route('/admin/orders/<drink_id>', methods=['GET'])
@@ -65,6 +65,10 @@ def update_order_status(order_id):
         abort(400)
     orders.get(order_id).status = request.args['status']
     return jsonify('OK')
+
+@app.route('/factory/orders/<int:order_id>', methods=['GET'])
+def update_order_status_admin(order_id):
+    return update_order_status(order_id)
 
 @app.route('/orders/<int:order_id>')
 def get_order_status(order_id):

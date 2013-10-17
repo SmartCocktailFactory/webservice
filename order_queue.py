@@ -5,9 +5,9 @@ class OrderQueue(object):
     def __init__(self):
         self.clear()
 
-    def add(self, drink_id, recipe, ):
+    def add(self, drink_id, drink_name, recipe):
         self.order_id += 1
-        self.orders[self.order_id] = Order(self.order_id, drink_id, recipe, 'pending')
+        self.orders[self.order_id] = Order(self.order_id, drink_id, drink_name, recipe, 'pending')
         return self.order_id
 
     def remove(self, order_id):

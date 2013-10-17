@@ -1,8 +1,9 @@
 class Order(object):
 
-    def __init__(self, order_id, drink_id, recipe, status):
+    def __init__(self, order_id, drink_id, drink_name, recipe, status):
         self.order_id = order_id
         self.drink_id = drink_id
+        self.drink_name = drink_name
         self.recipe = recipe
         self.status = status
 
@@ -11,6 +12,7 @@ class Order(object):
         {
               'order_id' : self.order_id,
               'drink_id' : self.drink_id,
+              'drink_name' : self.drink_name,
               'recipe' : self.recipe,
               'status' : self.status
         }
@@ -19,6 +21,7 @@ class Order(object):
         return \
         {
               'order_id' : self.order_id,
+              'drink_name' : self.drink_name,
               'recipe' : self.recipe
         }
 
