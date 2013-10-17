@@ -25,6 +25,7 @@ class Order(object):
     def to_gui_summary(self):
         return \
         {
+              'drink_id' : self.drink_id,
               'status' : self.status,
               'expected_time_to_completion' : 0
         }

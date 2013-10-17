@@ -6,6 +6,7 @@ class WebserviceTestFacade(object):
     def __init__(self):
         webservice.app.config['TESTING'] = True
         self.__test_client = webservice.app.test_client()
+        self.default_drink_id = 'ScrewdriverOtr'
 
     def get_index(self):
         return self.__get('/')

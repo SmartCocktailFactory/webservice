@@ -80,17 +80,20 @@ class WebservicePublicTestCase(unittest.TestCase):
 
     def test_getOrderStatusForPending(self):
         # given
-        self.app.order_drink()
+        drink_id = self.app.default_drink_id
+        self.app.order_drink(drink_id)
         # when
         response = self.app.get_order_status(1)
         # then
         self.assertEquals(dict, type(response))
         self.assertEquals('pending', response['status'])
         self.assertTrue(response['expected_time_to_completion'] > 0)
+        self.assertEqual(drink_id, response['drink_id'])
 
     def test_getOrderStatusForInProgress(self):
         # given
-        self.app.order_drink()
+        drink_id = self.app.default_drink_id
+        self.app.order_drink(drink_id)
         self.app.read_next_order()
         # when
         response = self.app.get_order_status(1)
@@ -98,10 +101,12 @@ class WebservicePublicTestCase(unittest.TestCase):
         self.assertEquals(dict, type(response))
         self.assertEquals('in progress', response['status'])
         self.assertTrue(response['expected_time_to_completion'] > 0)
+        self.assertEqual(drink_id, response['drink_id'])
 
     def test_getOrderStatusForCompleted(self):
         # given
-        self.app.order_drink()
+        drink_id = self.app.default_drink_id
+        self.app.order_drink(drink_id)
         self.app.read_next_order()
         self.app.set_order_completed(1)
         # when
@@ -110,6 +115,8 @@ class WebservicePublicTestCase(unittest.TestCase):
         self.assertEquals(dict, type(response))
         self.assertEquals('completed', response['status'])
         self.assertTrue(response['expected_time_to_completion'] == 0)
+        self.assertEqual(drink_id, response['drink_id'])
+
 
 if __name__ == '__main__':
     unittest.main()
