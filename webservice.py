@@ -32,6 +32,10 @@ def order_drink(drink_id):
     order_id = orders.add(drink_id, drinks[drink_id].recipe)
     return jsonify(order_id)
 
+@app.route('/admin/orders/<drink_id>', methods=['GET'])
+def order_drink_admin(drink_id):
+    return order_drink(drink_id)
+
 @app.route('/admin/orders')
 def get_orders():
     if 'status' in request.args:
