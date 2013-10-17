@@ -66,7 +66,7 @@ def update_order_status(order_id):
     orders.get(order_id).status = request.args['status']
     return jsonify('OK')
 
-@app.route('/factory/orders/<int:order_id>', methods=['GET'])
+@app.route('/admin/orders/<int:order_id>', methods=['GET'])
 def update_order_status_admin(order_id):
     return update_order_status(order_id)
 
